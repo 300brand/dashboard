@@ -1,0 +1,16 @@
+<div class="row">
+	<div class="col-md-4" ng-repeat="machine in machines">
+		<div class="row"><div class="col-md-12"><h2>{{machine.title}}</h2></div></div>
+
+		<div class="row" ng-repeat="container in machine.containers">
+
+			<div class="col-md-12">
+				<h4>{{container.Names[0]}}</h4>
+				<p>{{container.Id}}</p>
+			</div>
+
+		</div>
+
+		
+	</div>
+</div>

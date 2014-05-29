@@ -1,0 +1,31 @@
+<div class="row" ng-repeat="machine in machines">
+	<div class="col-md-12" ng-repeat="container in machine.containers">
+		<div class="row supervisor-row" ng-repeat="supervisor in container.supervisors" ng-class="{ 'bg-success': supervisor.state == 20, 'bg-danger': supervisor.state == 200 || supervisor.state == 30, 'bg-info': supervisor.state == 40 || supervisor.state == 10, 'bg-warn': supervisor.state == 100 }">
+			<div class="          col-md-1            hidden-xs" ng-class="{ 'hidden-sm': !$parent.$first || !$first }"><strong>{{machine.title}}</strong></div>
+			<div class="          col-md-4  col-sm-4  hidden-xs">{{container.Names[0]}}</div>
+			<div class="hidden-lg hidden-md hidden-sm col-xs-12"><strong>{{machine.title}}</strong>{{container.Names[0]}}</div>
+			<div class="          col-md-1  hidden-sm hidden-xs">{{supervisor.statename}}</div>
+			<div class="          col-md-2  col-sm-2  col-xs-5">{{supervisor.name}}</div>
+			<div class="          col-md-3  col-sm-4  col-xs-7">
+				<span ng-if="supervisor.start > 0">{{supervisor.start*1000 | date: 'MMM dd, yyyy HH:mm:ss'}}</span>
+				<span ng-if="supervisor.start == 0">Never started</span>
+			</div>
+			<div class="          col-md-1  col-sm-2  col-xs-12">
+				<div class="btn-group">
+					<a href title="View Log" class="btn btn-primary btn-xs">
+						<span class="glyphicon glyphicon-align-left"></span> <span class="hidden-lg hidden-md hidden-sm">View Log</span>
+					</a>
+					<a href title="Start" class="btn btn-success btn-xs" ng-if="supervisor.state != 20">
+						<span class="glyphicon glyphicon-off"></span> <span class="hidden-lg hidden-md hidden-sm">Start</span>
+					</a>
+					<a href title="Stop" class="btn btn-danger btn-xs" ng-if="supervisor.state == 20">
+						<span class="glyphicon glyphicon-off"></span> <span class="hidden-lg hidden-md hidden-sm">Stop</span>
+					</a>
+					<a href title="Restart" class="btn btn-warning btn-xs" ng-if="supervisor.state == 20">
+						<span class="glyphicon glyphicon-repeat"></span> <span class="hidden-lg hidden-md hidden-sm">Restart</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
