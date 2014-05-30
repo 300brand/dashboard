@@ -2,19 +2,45 @@
 define('USERNAME', 'supervisor');
 define('PASSWORD', 'supervisor');
 
-
 $machines = array(
-	'campbeltown' => array('ip' => '192.168.20.17', 'port' => '4243'),
-	'highland'    => array('ip' => '192.168.20.18', 'port' => '4243'),
-	'island'      => array('ip' => '192.168.20.19', 'port' => '4243'),
+	'campbeltown' => array('ip' => '192.168.20.17', 'port' => 4243),
+	'highland'    => array('ip' => '192.168.20.18', 'port' => 4243),
+	'island'      => array('ip' => '192.168.20.19', 'port' => 4243),
 );
 
 if (substr($_SERVER['SERVER_NAME'], -8) == 'squeaker') {
 	// Use proxies to get over to the machines
 	$machines = array(
-		'campbeltown' => array('ip' => '192.168.1.4', 'port' => '51700'),
-		'highland'    => array('ip' => '192.168.1.4', 'port' => '51800'),
-		'island'      => array('ip' => '192.168.1.4', 'port' => '51900'),
+		'campbeltown' => array(
+			'ip'      => '192.168.1.4',
+			'port'    => 51700,
+			'portmap' => array( // LocalForward 0.0.0.0:51702 192.168.20.17:50001
+				50001 => 51702,
+				50011 => 51704,
+				50021 => 51706,
+				50031 => 51708,
+			),
+		),
+		'highland'    => array(
+			'ip'      => '192.168.1.4',
+			'port'    => 51800,
+			'portmap' => array( // LocalForward 0.0.0.0:51802 192.168.20.18:50001
+				50001 => 51802,
+				50011 => 51804,
+				50021 => 51806,
+				50031 => 51808,
+			),
+		),
+		'island'      => array(
+			'ip'      => '192.168.1.4',
+			'port'    => 51900,
+			'portmap' => array( // LocalForward 0.0.0.0:51902 192.168.20.19:50001
+				50001 => 51902,
+				50011 => 51904,
+				50021 => 51906,
+				50031 => 51908,
+			),
+		),
 	);
 }
 
@@ -71,7 +97,7 @@ default:
 	}
 
 	$port = $container->HostConfig->PortBindings->{'9001/tcp'}[0]->HostPort;
-	$url = supervisor_url($machine['ip'], $port);
+	$url = supervisor_url($machine['ip'], port_tr($machine, $port));
 	$response = query_supervisor($url, $path, $_GET);
 	break;
 }
@@ -155,4 +181,14 @@ function query_supervisor($url, $method, array $params = array()) {
 	}
 	curl_close($ch);
 	return $return;
+}
+
+function port_tr($machine, $in) {
+	if (
+		!array_key_exists('portmap', $machine)
+		|| !array_key_exists($in, $machine['portmap'])
+	) {
+		return $in;
+	}
+	return $machine['portmap'][$in];
 }
