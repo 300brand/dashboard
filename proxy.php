@@ -144,7 +144,7 @@ function query_docker($url) {
 }
 
 function query_supervisor($url, $method, array $params = array()) {
-	$data_in = xmlrpc_encode_request($method, $params);
+	$data_in = xmlrpc_encode_request($method, array_values($params));
 	$ch = curl_init();
 	curl_setopt_array($ch, array(
 		CURLOPT_URL            => $url,
