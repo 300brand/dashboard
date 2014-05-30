@@ -1,5 +1,11 @@
 'use strict'
 
+var logTransform = function(data, headers) {
+	var o =JSON.parse(data)
+	data = { text: o[0] }
+	return data
+}
+
 var dashboardApp = angular.module('dashboardApp', [
 	'angularMoment',
 	'ngResource',
@@ -54,8 +60,18 @@ dashboardApp.service('DockerService', ['$resource', function($resource) {
 dashboardApp.service('SupervisorService', ['$resource', function($resource) {
 	return $resource('proxy/:machine/:container', { // paramDefaults
 	}, { // actions
+		allProcesses: { isArray: true,  url: 'proxy/:machine/:container/supervisor.getAllProcessInfo' },
 		state:        { isArray: false, url: 'proxy/:machine/:container/supervisor.getState' },
-		allProcesses: { isArray: true,  url: 'proxy/:machine/:container/supervisor.getAllProcessInfo' }
+		stderrLogs:   {
+			isArray: false,
+			url: 'proxy/:machine/:container/supervisor.tailProcessStderrLog?name=:name&offset=0&length=16384',
+			transformResponse: logTransform
+		},
+		stdoutLogs:   {
+			isArray: false,
+			url: 'proxy/:machine/:container/supervisor.tailProcessStdoutLog?name=:name&offset=0&length=16384',
+			transformResponse: logTransform
+		}
 	}, { // options
 	})
 }])
@@ -117,7 +133,24 @@ dashboardApp.controller('SupervisorsController', [
 			angular.forEach(machines, function(m) {
 				m.containers = Docker.containers({machine: m.name}, function(containers) {
 					angular.forEach(containers, function(c) {
-						c.supervisors = Supervisor.allProcesses({machine: m.name, container: c.Id})
+						c.supervisors = Supervisor.allProcesses({machine: m.name, container: c.Id}, function(supervisors) {
+							angular.forEach(supervisors, function(s) {
+								s.toggleLogs = function() {
+									if (s.log) {
+										s.log = null
+										return
+									}
+									s.log = {}
+									var args = {
+										machine:   m.name,
+										container: c.Id,
+										name:      s.name
+									}
+									Supervisor.stdoutLogs(args, function(l) { s.log.stdout = l.text })
+									Supervisor.stderrLogs(args, function(l) { s.log.stderr = l.text })
+								}
+							})
+						})
 					})
 				})
 			})

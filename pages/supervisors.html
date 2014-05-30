@@ -15,7 +15,7 @@
 			</div>
 			<div class="          col-md-1  col-sm-2  col-xs-12">
 				<div class="btn-group">
-					<button title="View Log" class="btn btn-primary btn-xs">
+					<button title="View Log" class="btn btn-primary btn-xs" ng-class="{active: supervisor.log}" ng-click="supervisor.toggleLogs()">
 						<span class="glyphicon glyphicon-align-left"></span> <span class="hidden-lg hidden-md hidden-sm">View Log</span>
 					</button>
 					<button title="Start" class="btn btn-success btn-xs" ng-if="supervisor.state != 20">
@@ -29,10 +29,9 @@
 					</button>
 				</div>
 			</div>
-			<div class="col-xs-12">proxy/{{machine.name}}/{{container.Id}}/supervisor.tailProcessStdoutLog?name=mongo-data-rs0&amp;offset=0&amp;length=16384</div>
 			<div class="log" ng-if="supervisor.log">
-				<div class="col-xs-6"><pre class="text-info">{{supervisor.log.stdout}}</pre></div>
-				<div class="col-xs-6"><pre class="text-danger">{{supervisor.log.stderr}}</pre></div>
+				<div class="col-md-6"><pre class="text-info">{{supervisor.log.stdout}}</pre></div>
+				<div class="col-md-6"><pre class="text-danger">{{supervisor.log.stderr}}</pre></div>
 			</div>
 		</div>
 	</div>
