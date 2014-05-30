@@ -21,6 +21,8 @@
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
 	<script src="//cdn.jsdelivr.net/angular.bootstrap/0.11.0/ui-bootstrap.min.js"></script>
 	<script src="//cdn.jsdelivr.net/angular.bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
+	<script src="//cdn.jsdelivr.net/momentjs/2.6.0/moment.min.js"></script>
+	<script src="//cdn.jsdelivr.net/angular.moment/0.7.1/angular-moment.min.js"></script>
 	<script src="js/app.js"></script>
 </head>
 <body>

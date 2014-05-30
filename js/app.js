@@ -1,6 +1,7 @@
 'use strict'
 
 var dashboardApp = angular.module('dashboardApp', [
+	'angularMoment',
 	'ngResource',
 	'ngRoute',
 	'ui.bootstrap'

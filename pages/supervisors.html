@@ -7,24 +7,32 @@
 			<div class="          col-md-1  hidden-sm hidden-xs">{{supervisor.statename}}</div>
 			<div class="          col-md-2  col-sm-2  col-xs-5">{{supervisor.name}}</div>
 			<div class="          col-md-3  col-sm-4  col-xs-7">
-				<span ng-if="supervisor.start > 0">{{supervisor.start*1000 | date: 'MMM dd, yyyy HH:mm:ss'}}</span>
+				<span title="{{supervisor.start*1000 | date: 'MMM dd, yyyy HH:mm:ss'}}" am-time-ago="supervisor.start" am-preprocess="unix" ng-if="supervisor.state == 20"></span>
+				<span ng-if="supervisor.state != 20 &amp;&amp; supervisor.start > 0">
+					<span am-time-ago="supervisor.stop" am-preprocess="unix"></span> for {{supervisor.stop - supervisor.start | amDurationFormat}}
+				</span>
 				<span ng-if="supervisor.start == 0">Never started</span>
 			</div>
 			<div class="          col-md-1  col-sm-2  col-xs-12">
 				<div class="btn-group">
-					<a href title="View Log" class="btn btn-primary btn-xs">
+					<button title="View Log" class="btn btn-primary btn-xs">
 						<span class="glyphicon glyphicon-align-left"></span> <span class="hidden-lg hidden-md hidden-sm">View Log</span>
-					</a>
-					<a href title="Start" class="btn btn-success btn-xs" ng-if="supervisor.state != 20">
+					</button>
+					<button title="Start" class="btn btn-success btn-xs" ng-if="supervisor.state != 20">
 						<span class="glyphicon glyphicon-off"></span> <span class="hidden-lg hidden-md hidden-sm">Start</span>
-					</a>
-					<a href title="Stop" class="btn btn-danger btn-xs" ng-if="supervisor.state == 20">
+					</button>
+					<button title="Stop" class="btn btn-danger btn-xs" ng-if="supervisor.state == 20">
 						<span class="glyphicon glyphicon-off"></span> <span class="hidden-lg hidden-md hidden-sm">Stop</span>
-					</a>
-					<a href title="Restart" class="btn btn-warning btn-xs" ng-if="supervisor.state == 20">
+					</button>
+					<button title="Restart" class="btn btn-warning btn-xs" ng-if="supervisor.state == 20">
 						<span class="glyphicon glyphicon-repeat"></span> <span class="hidden-lg hidden-md hidden-sm">Restart</span>
-					</a>
+					</button>
 				</div>
+			</div>
+			<div class="col-xs-12">proxy/{{machine.name}}/{{container.Id}}/supervisor.tailProcessStdoutLog?name=mongo-data-rs0&amp;offset=0&amp;length=16384</div>
+			<div class="log" ng-if="supervisor.log">
+				<div class="col-xs-6"><pre class="text-info">{{supervisor.log.stdout}}</pre></div>
+				<div class="col-xs-6"><pre class="text-danger">{{supervisor.log.stderr}}</pre></div>
 			</div>
 		</div>
 	</div>
