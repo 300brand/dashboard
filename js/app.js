@@ -60,17 +60,35 @@ dashboardApp.service('DockerService', ['$resource', function($resource) {
 dashboardApp.service('SupervisorService', ['$resource', function($resource) {
 	return $resource('proxy/:machine/:container', { // paramDefaults
 	}, { // actions
-		allProcesses: { isArray: true,  url: 'proxy/:machine/:container/supervisor.getAllProcessInfo' },
-		state:        { isArray: false, url: 'proxy/:machine/:container/supervisor.getState' },
-		stderrLogs:   {
+		allProcesses: {
+			isArray: true,
+			url:     'proxy/:machine/:container/supervisor.getAllProcessInfo'
+		},
+		processInfo: {
 			isArray: false,
-			url: 'proxy/:machine/:container/supervisor.tailProcessStderrLog?name=:name&offset=0&length=16384',
+			url:     'proxy/:machine/:container/supervisor.getProcessInfo?name=:name'
+		},
+		start: {
+			isArray: false,
+			url:     'proxy/:machine/:container/supervisor.startProcess?name=:name&wait=true'
+		},
+		state: {
+			isArray: false,
+			url:     'proxy/:machine/:container/supervisor.getState'
+		},
+		stderrLogs: {
+			isArray: false,
+			url:     'proxy/:machine/:container/supervisor.tailProcessStderrLog?name=:name&offset=0&length=16384',
 			transformResponse: logTransform
 		},
-		stdoutLogs:   {
+		stdoutLogs: {
 			isArray: false,
-			url: 'proxy/:machine/:container/supervisor.tailProcessStdoutLog?name=:name&offset=0&length=16384',
+			url:     'proxy/:machine/:container/supervisor.tailProcessStdoutLog?name=:name&offset=0&length=16384',
 			transformResponse: logTransform
+		},
+		stop: {
+			isArray: false,
+			url:     'proxy/:machine/:container/supervisor.stopProcess?name=:name&wait=true'
 		}
 	}, { // options
 	})
@@ -135,20 +153,30 @@ dashboardApp.controller('SupervisorsController', [
 					angular.forEach(containers, function(c) {
 						c.supervisors = Supervisor.allProcesses({machine: m.name, container: c.Id}, function(supervisors) {
 							angular.forEach(supervisors, function(s) {
-								s.toggleLogs = function() {
-									if (s.log) {
-										s.log = null
-										return
-									}
-									s.log = {}
-									var args = {
-										machine:   m.name,
-										container: c.Id,
-										name:      s.name
-									}
-									Supervisor.stdoutLogs(args, function(l) { s.log.stdout = l.text })
-									Supervisor.stderrLogs(args, function(l) { s.log.stderr = l.text })
+								var args = {
+									machine:   m.name,
+									container: c.Id,
+									name:      s.name
 								}
+								var cmd = {
+									toggleLogs: function() {
+										if (s.log) {
+											s.log = null
+											return
+										}
+										s.log = {}
+										Supervisor.stdoutLogs(args, function(l) { s.log.stdout = l.text })
+										Supervisor.stderrLogs(args, function(l) { s.log.stderr = l.text })
+									},
+									stop: function() {},
+									start: function() {
+										Supervisor.start(args)
+										s = Supervisor.processInfo(args)
+										s.cmd = cmd
+									},
+									restart: function() {}
+								}
+								s.cmd = cmd
 							})
 						})
 					})

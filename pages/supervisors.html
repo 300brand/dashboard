@@ -29,9 +29,11 @@
 					</button>
 				</div>
 			</div>
-			<div class="log" ng-if="supervisor.log">
-				<div class="col-md-6"><pre class="text-info">{{supervisor.log.stdout}}</pre></div>
-				<div class="col-md-6"><pre class="text-danger">{{supervisor.log.stderr}}</pre></div>
+			<div class="col-xs-12 supervisor-log" ng-if="supervisor.log">
+				<div class="row">
+					<div class="col-md-6"><pre class="pre-scrollable text-info small">{{supervisor.log.stdout}}</pre></div>
+					<div class="col-md-6"><pre class="pre-scrollable text-danger small">{{supervisor.log.stderr}}</pre></div>
+				</div>
 			</div>
 		</div>
 	</div>

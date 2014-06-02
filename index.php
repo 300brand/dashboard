@@ -10,6 +10,9 @@
 	.nav-tabs>li>a, .nav-pills>li>a {
 		cursor:pointer;
 	}
+	.supervisor-log {
+		padding-top:0.5em;
+	}
 	.supervisor-row {
 		padding-bottom:0.25em;
 		padding-top:0.25em;
