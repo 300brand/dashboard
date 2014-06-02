@@ -18,6 +18,41 @@
 		padding-top:0.25em;
 		margin-bottom:2px;
 	}
+	.glyphicon-spin {
+		        transform-origin:50% 50%;
+		    -ms-transform-origin:50% 50%; /* IE 9 */
+		-webkit-transform-origin:50% 50%;
+		        animation:spin 1s infinite linear;
+		     -o-animation:spin 1s infinite linear;
+		   -moz-animation:spin 1s infinite linear;
+		-webkit-animation:spin 1s infinite linear;
+	}
+	@-moz-keyframes spin {
+		from {
+			-moz-transform: rotate(0deg);
+		}
+		to {
+			-moz-transform: rotate(360deg);
+		}
+	}
+
+	@-webkit-keyframes spin {
+		from {
+			-webkit-transform: rotate(0deg);
+		}
+		to {
+			-webkit-transform: rotate(360deg);
+		}
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
 	</style>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-route.min.js"></script>

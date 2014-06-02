@@ -158,25 +158,65 @@ dashboardApp.controller('SupervisorsController', [
 									container: c.Id,
 									name:      s.name
 								}
-								var cmd = {
+								s.cmd = {
+									activate: function(what) {
+										s.active = s.active || {}
+										s.active[what] = true
+									},
+									deactivate: function(what) {
+										s.active = s.active || {}
+										s.active[what] = false
+									},
 									toggleLogs: function() {
 										if (s.log) {
 											s.log = null
 											return
 										}
+										s.cmd.activate('toggleLogs')
 										s.log = {}
-										Supervisor.stdoutLogs(args, function(l) { s.log.stdout = l.text })
-										Supervisor.stderrLogs(args, function(l) { s.log.stderr = l.text })
+										Supervisor.stdoutLogs(args, function(l) {
+											if (s.log) {
+												s.cmd.deactivate('toggleLogs')
+											}
+											s.log.stdout = l.text
+										})
+										Supervisor.stderrLogs(args, function(l) {
+											if (s.log) {
+												s.cmd.deactivate('toggleLogs')
+											}
+											s.log.stderr = l.text
+										})
 									},
-									stop: function() {},
+									stop: function() {
+										s.cmd.activate('stop')
+										Supervisor.stop(args, function() {
+											Supervisor.processInfo(args, function(data) {
+												angular.extend(s, data)
+												s.cmd.deactivate('stop')
+											})
+										})
+									},
 									start: function() {
-										Supervisor.start(args)
-										s = Supervisor.processInfo(args)
-										s.cmd = cmd
+										s.cmd.activate('start')
+										Supervisor.start(args, function() {
+											Supervisor.processInfo(args, function(data) {
+												angular.extend(s, data)
+												s.cmd.deactivate('start')
+											})
+										})
 									},
-									restart: function() {}
+									restart: function() {
+										s.cmd.activate('restart')
+										Supervisor.stop(args, function() {
+											Supervisor.start(args, function() {
+												Supervisor.processInfo(args, function(data) {
+													angular.extend(s, data)
+													s.cmd.deactivate('restart')
+												})
+											})
+										})
+									}
 								}
-								s.cmd = cmd
 							})
 						})
 					})

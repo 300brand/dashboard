@@ -16,16 +16,20 @@
 			<div class="          col-md-1  col-sm-2  col-xs-12">
 				<div class="btn-group">
 					<button title="View Log" class="btn btn-primary btn-xs" ng-class="{active: supervisor.log}" ng-click="supervisor.cmd.toggleLogs()">
-						<span class="glyphicon glyphicon-align-left"></span> <span class="hidden-lg hidden-md hidden-sm">View Log</span>
+						<span class="glyphicon" ng-class="{ 'glyphicon-align-left': !supervisor.active.toggleLogs, 'glyphicon-refresh glyphicon-spin': supervisor.active.toggleLogs }"></span>
+						<span class="hidden-lg hidden-md hidden-sm">View Log</span>
 					</button>
-					<button title="Start" class="btn btn-success btn-xs" ng-if="supervisor.state != 20">
-						<span class="glyphicon glyphicon-off"></span> <span class="hidden-lg hidden-md hidden-sm">Start</span>
+					<button title="Start" class="btn btn-success btn-xs" ng-if="supervisor.state != 20" ng-click="supervisor.cmd.start()">
+						<span class="glyphicon" ng-class="{ 'glyphicon-off': !supervisor.active.start, 'glyphicon-refresh glyphicon-spin': supervisor.active.start }"></span>
+						<span class="hidden-lg hidden-md hidden-sm">Start</span>
 					</button>
-					<button title="Stop" class="btn btn-danger btn-xs" ng-if="supervisor.state == 20">
-						<span class="glyphicon glyphicon-off"></span> <span class="hidden-lg hidden-md hidden-sm">Stop</span>
+					<button title="Stop" class="btn btn-danger btn-xs" ng-if="supervisor.state == 20" ng-click="supervisor.cmd.stop()">
+						<span class="glyphicon" ng-class="{ 'glyphicon-off': !supervisor.active.stop, 'glyphicon-refresh glyphicon-spin': supervisor.active.stop }"></span>
+						<span class="hidden-lg hidden-md hidden-sm">Stop</span>
 					</button>
-					<button title="Restart" class="btn btn-warning btn-xs" ng-if="supervisor.state == 20">
-						<span class="glyphicon glyphicon-repeat"></span> <span class="hidden-lg hidden-md hidden-sm">Restart</span>
+					<button title="Restart" class="btn btn-warning btn-xs" ng-if="supervisor.state == 20" ng-click="supervisor.cmd.restart()">
+						<span class="glyphicon" ng-class="{ 'glyphicon-repeat': !supervisor.active.restart, 'glyphicon-refresh glyphicon-spin': supervisor.active.restart }"></span>
+						<span class="hidden-lg hidden-md hidden-sm">Restart</span>
 					</button>
 				</div>
 			</div>
