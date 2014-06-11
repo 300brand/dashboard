@@ -60,10 +60,11 @@ list(/* leading slash */, $machine_name, $container_id, $path) = array_merge(exp
 switch ($machine_name) {
 case '_machines':
 	$response = array();
-	foreach ($machines as $m => $_) {
+	foreach ($machines as $m => $cfg) {
 		$response[] = array(
 			'name'  => $m,
 			'title' => ucwords($m),
+			'ip'    => $cfg['ip'],
 		);
 	}
 	print(json_encode($response));
