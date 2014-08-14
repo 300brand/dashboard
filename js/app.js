@@ -33,6 +33,10 @@ dashboardApp.config([
 				templateUrl:  'pages/supervisors.html',
 				controller:   'SupervisorsController',
 			})
+			.when('/spider/config', {
+				templateUrl:  'pages/spider-config.html',
+				controller:   'SpiderConfigController',
+			})
 		// To remove the need for the hash (#)
 		// $locationProvider.html5Mode(true)
 	}
@@ -90,6 +94,36 @@ dashboardApp.service('SupervisorService', ['$resource', function($resource) {
 			isArray: false,
 			url:     'proxy/:machine/:container/supervisor.stopProcess?name=:name&wait=true'
 		}
+	}, { // options
+	})
+}])
+
+dashboardApp.service('SpiderConfiguratorService', ['$resource', function($resource) {
+	return $resource('configurator/spider', { //paramDefaults
+	}, { // actions
+		all: {
+			isArray: false,
+			url:     'configurator/spider/rule/all',
+		},
+		del: {
+			isArray: false,
+			url:     'configurator/spider/rule/delete/:id',
+		},
+		update: {
+			isArray: false,
+			url:     'configurator/spider/rule/update/:id',
+			method:  'POST',
+		},
+		create: {
+			isArray: false,
+			url:     'configurator/spider/rule/create',
+			method:  'POST',
+		},
+		validate: {
+			isArray: false,
+			url:     'configurator/spider/validate',
+			method:  'POST',
+		},
 	}, { // options
 	})
 }])
@@ -226,3 +260,46 @@ dashboardApp.controller('SupervisorsController', [
 	}
 ])
 
+dashboardApp.controller('SpiderConfigController', [
+	'$scope',
+	'SpiderConfiguratorService',
+	function($scope, SpiderConfiguratorService) {
+		$scope.rules = []
+		SpiderConfiguratorService.all(function(data) {
+			$scope.rules = data.Response
+		})
+	}
+])
+
+dashboardApp.controller('SpiderAddRuleController', [
+	'$scope',
+	'$route',
+	'SpiderConfiguratorService',
+	function($scope, $route, SpiderConfiguratorService) {
+		$scope.host = ''
+		$scope.json = angular.toJson({
+			Ident:       "uniqueIdentifier",
+			Start:       "http://www.example.com/startpage",
+			CSSLinks:    "a[href]",
+			CSSTitle:    "title",
+			MaxDepth:    1,
+			RestartMins: 30,
+			Accept:      [ "^/news/articles/.*.php" ],
+			Reject:      [ "^/news/articles/list.php" ]
+		}, true)
+		$scope.validate = function() {
+			SpiderConfiguratorService.validate({ json: $scope.json}, function(data) {
+				$scope.spiderAddRule.json.$setValidity("json", data.Success)
+			})
+		}
+		$scope.submit = function() {
+			SpiderConfiguratorService.create({ host: $scope.host, json: $scope.json }, function(data) {
+				if (data.Success) {
+					$route.reload()
+				} else {
+					console.log("Submission failed:", data)
+				}
+			})
+		}
+	}
+])

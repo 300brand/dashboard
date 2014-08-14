@@ -1,0 +1,32 @@
+<h1 class="page-header"><i class="fa fa-sitemap fa-fw"></i> Spider <small>Configuration</small></h1>
+
+<div class="row" ng-repeat="rule in rules">
+	<div class="col-sm-8">{{rule.Host}}</div>
+	<div class="col-sm-4">
+		<a ng-click="doUpdate">Update</a>
+		<a ng-click="doDelete">Delete</a>
+	</div>
+</div>
+
+<h2 class="page-header">Add New Rule</h2>
+
+<form class="form-horizontal" role="form" ng-controller="SpiderAddRuleController" ng-submit="submit()" name="spiderAddRule">
+	<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderAddRule.host.$valid }">
+		<label class="control-label col-sm-3" for="Host">Base Domain Name</label>
+		<div class="col-sm-9">
+			<div class="text-error" ng-show="">Required!</div>
+			<input class="form-control" type="text" id="Host" name="host" placeholder="www.example.com" required ng-model="host">
+		</div>
+	</div>
+	<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderAddRule.json.$valid }">
+		<label class="control-label col-sm-3" for="JSON">JSON Configuration</label>
+		<div class="col-sm-9">
+			<textarea class="form-control" id="JSON" name="json" style="font-family:monospace" rows="15" ng-model="json" ng-change="validate()"></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-9 col-sm-offset-3">
+			<button type="submit" class="btn btn-default" ng-disabled="!spiderAddRule.$valid">Add New Rule</button>
+		</div>
+	</div>
+</form>
