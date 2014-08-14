@@ -94,7 +94,7 @@ dashboardApp.service('SupervisorService', ['$resource', function($resource) {
 	})
 }])
 
-dashboardApp.controller('HeaderController', [
+dashboardApp.controller('NavigationController', [
 	'$scope',
 	'$route',
 	'$routeParams',
