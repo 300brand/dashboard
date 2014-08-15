@@ -1,0 +1,21 @@
+<h1 class="page-header"><i class="fa fa-sitemap fa-fw"></i> Spider <small>Configuration &raquo; {{formName}}</small></h1>
+
+<form class="form-horizontal" role="form" ng-submit="submit()" name="spiderRuleForm">
+	<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderRuleForm.host.$valid }">
+		<label class="control-label col-md-3" for="Host">Base Domain Name</label>
+		<div class="col-md-9">
+			<input class="form-control" type="text" id="Host" name="host" placeholder="www.example.com" required ng-model="host">
+		</div>
+	</div>
+	<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderRuleForm.json.$valid }">
+		<label class="control-label col-md-3" for="JSON">JSON Configuration</label>
+		<div class="col-md-9">
+			<textarea class="form-control" id="JSON" name="json" style="font-family:monospace" rows="15" ng-model="json" ng-change="validate(spiderRuleForm)"></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-md-9 col-md-offset-3">
+			<button type="submit" class="btn btn-primary" ng-disabled="!spiderRuleForm.$valid">{{formName}}</button>
+		</div>
+	</div>
+</form>

@@ -1,32 +1,41 @@
 <h1 class="page-header"><i class="fa fa-sitemap fa-fw"></i> Spider <small>Configuration</small></h1>
 
-<div class="row" ng-repeat="rule in rules">
-	<div class="col-sm-8">{{rule.Host}}</div>
-	<div class="col-sm-4">
-		<a ng-click="doUpdate">Update</a>
-		<a ng-click="doDelete">Delete</a>
-	</div>
-</div>
-
-<h2 class="page-header">Add New Rule</h2>
-
-<form class="form-horizontal" role="form" ng-controller="SpiderAddRuleController" ng-submit="submit()" name="spiderAddRule">
-	<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderAddRule.host.$valid }">
-		<label class="control-label col-sm-3" for="Host">Base Domain Name</label>
-		<div class="col-sm-9">
-			<div class="text-error" ng-show="">Required!</div>
-			<input class="form-control" type="text" id="Host" name="host" placeholder="www.example.com" required ng-model="host">
-		</div>
-	</div>
-	<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderAddRule.json.$valid }">
-		<label class="control-label col-sm-3" for="JSON">JSON Configuration</label>
-		<div class="col-sm-9">
-			<textarea class="form-control" id="JSON" name="json" style="font-family:monospace" rows="15" ng-model="json" ng-change="validate()"></textarea>
-		</div>
-	</div>
-	<div class="form-group">
-		<div class="col-sm-9 col-sm-offset-3">
-			<button type="submit" class="btn btn-default" ng-disabled="!spiderAddRule.$valid">Add New Rule</button>
-		</div>
-	</div>
-</form>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Host</th>
+			<th>Identifier</th>
+			<th>Start</th>
+			<th colspan="2">
+				<a href="#/spider/config/add" class="btn btn-success"><span class="fa fa-plus-square"></span> Add New Rule</a>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="rule in rules">
+			<td>{{rule.Id}}</td>
+			<td>{{rule.Host}}</td>
+			<td>{{rule.Rule.Ident}}</td>
+			<td><a href="{{rule.Rule.Start}}" target="_blank">{{rule.Rule.Start}}</a></td>
+			<td>
+				<a href="#/spider/config/edit/{{rule.Id}}"><span class="fa fa-edit fa-fw"></span> Edit</a>
+			</td>
+			<td>
+				<a ng-click="confirmDelete(rule.Id)"><span class="fa fa-trash-o fa-fw"></span> Delete</a>
+				<script type="text/ng-template" id="ModalDelete{{rule.Id}}.html">
+					<div class="modal-header">
+						<h4 class="modal-title">Confirm Deletion</h4>
+					</div>
+					<div class="modal-body">
+						Are you sure you want to delete the rule for {{rule.Host}}
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary">Delete</button>
+						<button type="button" class="btn btn-warning">Cancel</button>
+					</div>
+				</script>
+			</td>
+		</tr>
+	</tbody>
+</table>

@@ -37,6 +37,14 @@ dashboardApp.config([
 				templateUrl:  'pages/spider-config.html',
 				controller:   'SpiderConfigController',
 			})
+			.when('/spider/config/add', {
+				templateUrl:  'pages/spider-config-form.html',
+				controller:   'SpiderRuleAddFormController',
+			})
+			.when('/spider/config/edit/:id', {
+				templateUrl:  'pages/spider-config-form.html',
+				controller:   'SpiderRuleEditFormController',
+			})
 		// To remove the need for the hash (#)
 		// $locationProvider.html5Mode(true)
 	}
@@ -262,21 +270,88 @@ dashboardApp.controller('SupervisorsController', [
 
 dashboardApp.controller('SpiderConfigController', [
 	'$scope',
+	'$modal',
 	'SpiderConfiguratorService',
-	function($scope, SpiderConfiguratorService) {
+	function($scope, $modal, SpiderConfiguratorService) {
+		// http://stackoverflow.com/a/19931221
+		$scope.form = {}
 		$scope.rules = []
 		SpiderConfiguratorService.all(function(data) {
 			$scope.rules = data.Response
 		})
+		$scope.openForm = function(id) {
+			var modalInstance = $modal.open({
+				templateUrl: 'ModalFormTemplate.html',
+				controller:  (id>0) ? 'SpiderRuleEditFormController' : 'SpiderRuleAddFormController',
+				size:        '',
+				resolve:     {
+					formName: function() {
+						return (id > 0) ? "Add New Rule" : "Edit Rule"
+					},
+					id: function() {
+						return id
+					}
+				}
+			})
+
+			modalInstance.result.then(
+				function() {
+					console.log("Closed with arguments", arguments)
+				},
+				function() {
+					console.log("Dismissed")
+				}
+			)
+		}
 	}
 ])
 
-dashboardApp.controller('SpiderAddRuleController', [
+dashboardApp.controller('SpiderRuleAddFormController', [
+	'$scope',
+	'$location',
+	'SpiderConfiguratorService',
+	function($scope, $location, SpiderConfiguratorService) {
+		// Add New
+		$scope.formName = "Add New Rule"
+		$scope.host = ''
+		$scope.json = angular.toJson({
+			Ident:       "uniqueIdentifier",
+			Start:       "http://www.example.com/startpage",
+			CSSLinks:    "a[href]",
+			CSSTitle:    "title",
+			MaxDepth:    1,
+			RestartMins: 30,
+			Accept:      [ "^/news/articles/.*.php" ],
+			Reject:      [ "^/news/articles/list.php" ]
+		}, true)
+		$scope.validate = function(form) {
+			SpiderConfiguratorService.validate({ json: $scope.json}, function(data) {
+				console.log(form)
+				form.json.$setValidity("json", data.Success)
+			})
+		}
+		$scope.submit = function() {
+			SpiderConfiguratorService.create({ host: $scope.host, json: $scope.json }, function(data) {
+				if (data.Success) {
+					$location.path('/spider/config')
+				} else {
+					console.log("Submission failed:", data)
+				}
+			})
+		}
+	}
+])
+
+dashboardApp.controller('SpiderRuleEditFormController', [
 	'$scope',
 	'$route',
+	'$location',
 	'SpiderConfiguratorService',
-	function($scope, $route, SpiderConfiguratorService) {
-		$scope.host = ''
+	function($scope, $route, $location, SpiderConfiguratorService) {
+		// Edit
+		$scope.id = $route.current.params.id
+		$scope.formName = "Edit Rule"
+		$scope.host = "Host for " + $scope.id
 		$scope.json = angular.toJson({
 			Ident:       "uniqueIdentifier",
 			Start:       "http://www.example.com/startpage",
@@ -289,13 +364,13 @@ dashboardApp.controller('SpiderAddRuleController', [
 		}, true)
 		$scope.validate = function() {
 			SpiderConfiguratorService.validate({ json: $scope.json}, function(data) {
-				$scope.spiderAddRule.json.$setValidity("json", data.Success)
+				$scope.json.$setValidity("json", data.Success)
 			})
 		}
 		$scope.submit = function() {
-			SpiderConfiguratorService.create({ host: $scope.host, json: $scope.json }, function(data) {
+			SpiderConfiguratorService.update({ id: id, host: $scope.host, json: $scope.json }, function(data) {
 				if (data.Success) {
-					$route.reload()
+					$location.path('/spider/config')
 				} else {
 					console.log("Submission failed:", data)
 				}
