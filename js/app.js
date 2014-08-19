@@ -119,13 +119,17 @@ dashboardApp.service('SpiderConfiguratorService', ['$resource', function($resour
 		},
 		update: {
 			isArray: false,
-			url:     'configurator/spider/rule/update/:id',
+			url:     'configurator/spider/rule/update',
 			method:  'POST',
 		},
 		create: {
 			isArray: false,
 			url:     'configurator/spider/rule/create',
 			method:  'POST',
+		},
+		one: {
+			isArray: false,
+			url:     'configurator/spider/rule/:id',
 		},
 		validate: {
 			isArray: false,
@@ -349,26 +353,25 @@ dashboardApp.controller('SpiderRuleEditFormController', [
 	'SpiderConfiguratorService',
 	function($scope, $route, $location, SpiderConfiguratorService) {
 		// Edit
-		$scope.id = $route.current.params.id
 		$scope.formName = "Edit Rule"
-		$scope.host = "Host for " + $scope.id
-		$scope.json = angular.toJson({
-			Ident:       "uniqueIdentifier",
-			Start:       "http://www.example.com/startpage",
-			CSSLinks:    "a[href]",
-			CSSTitle:    "title",
-			MaxDepth:    1,
-			RestartMins: 30,
-			Accept:      [ "^/news/articles/.*.php" ],
-			Reject:      [ "^/news/articles/list.php" ]
-		}, true)
+		$scope.id = $route.current.params.id
+
+		SpiderConfiguratorService.one({ id: $scope.id }, function(data) {
+			if (data.Success) {
+				$scope.host = data.Response.Host
+				$scope.json = data.Response.RuleStr
+			} else {
+				console.log("One failed:", data)
+			}
+		})
+
 		$scope.validate = function() {
 			SpiderConfiguratorService.validate({ json: $scope.json}, function(data) {
 				$scope.json.$setValidity("json", data.Success)
 			})
 		}
 		$scope.submit = function() {
-			SpiderConfiguratorService.update({ id: id, host: $scope.host, json: $scope.json }, function(data) {
+			SpiderConfiguratorService.update({ id: $scope.id, host: $scope.host, json: $scope.json }, function(data) {
 				if (data.Success) {
 					$location.path('/spider/config')
 				} else {
