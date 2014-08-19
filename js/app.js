@@ -27,7 +27,7 @@ dashboardApp.config([
 			})
 			.when('/processes', {
 				templateUrl:  'pages/processes.html',
-				controller:   'ProcessesController',
+				controller:   'SupervisorsController',
 			})
 			.when('/supervisors', {
 				templateUrl:  'pages/supervisors.html',
@@ -131,9 +131,14 @@ dashboardApp.service('SpiderConfiguratorService', ['$resource', function($resour
 			isArray: false,
 			url:     'configurator/spider/rule/:id',
 		},
+		test: {
+			isArray: false,
+			url:     'configurator/spider/rule/test',
+			method:  'POST',
+		},
 		validate: {
 			isArray: false,
-			url:     'configurator/spider/validate',
+			url:     'configurator/spider/rule/validate',
 			method:  'POST',
 		},
 	}, { // options
@@ -290,6 +295,7 @@ dashboardApp.controller('SpiderRuleAddFormController', [
 	'SpiderConfiguratorService',
 	function($scope, $location, SpiderConfiguratorService) {
 		// Add New
+		$scope.goUrlToString = goUrlToString
 		$scope.formName = "Add New Rule"
 		$scope.host = ''
 		$scope.json = angular.toJson({
@@ -304,7 +310,6 @@ dashboardApp.controller('SpiderRuleAddFormController', [
 		}, true)
 		$scope.validate = function(form) {
 			SpiderConfiguratorService.validate({ json: $scope.json}, function(data) {
-				console.log(form)
 				form.json.$setValidity("json", data.Success)
 			})
 		}
@@ -317,6 +322,11 @@ dashboardApp.controller('SpiderRuleAddFormController', [
 				}
 			})
 		}
+		$scope.test = function(form) {
+			SpiderConfiguratorService.test({json: $scope.json}, function(data) {
+				$scope.testData = data
+			})
+		}
 	}
 ])
 
@@ -327,6 +337,7 @@ dashboardApp.controller('SpiderRuleEditFormController', [
 	'SpiderConfiguratorService',
 	function($scope, $route, $location, SpiderConfiguratorService) {
 		// Edit
+		$scope.goUrlToString = goUrlToString
 		$scope.formName = "Edit Rule"
 		$scope.id = $route.current.params.id
 
@@ -339,9 +350,9 @@ dashboardApp.controller('SpiderRuleEditFormController', [
 			}
 		})
 
-		$scope.validate = function() {
+		$scope.validate = function(form) {
 			SpiderConfiguratorService.validate({ json: $scope.json}, function(data) {
-				$scope.json.$setValidity("json", data.Success)
+				form.json.$setValidity("json", data.Success)
 			})
 		}
 		$scope.submit = function() {
@@ -351,6 +362,11 @@ dashboardApp.controller('SpiderRuleEditFormController', [
 				} else {
 					console.log("Submission failed:", data)
 				}
+			})
+		}
+		$scope.test = function(form) {
+			SpiderConfiguratorService.test({json: $scope.json}, function(data) {
+				$scope.testData = data
 			})
 		}
 	}
@@ -405,3 +421,34 @@ var SpiderRuleModalController = [
 		}
 	}
 ]
+
+var goUrlToString = function(u) {
+	var buf = ""
+	if (u.Scheme != "") {
+		buf += u.Scheme
+		buf += ':'
+	}
+	if (u.Opaque != "") {
+		buf += u.Opaque
+	} else {
+		if (u.Scheme != "" || u.Host != "") {
+			buf += "//"
+			if (u.Host != "") {
+				buf += u.Host
+			}
+		}
+		if (u.Path != "" && u.Path[0] != '/' && u.Host != "") {
+			buf += '/'
+		}
+		buf += escape(u.Path)
+	}
+	if (u.RawQuery != "") {
+		buf += '?'
+		buf += u.RawQuery
+	}
+	if (u.Fragment != "") {
+		buf += '#'
+		buf += escape(u.Fragment)
+	}
+	return buf
+}

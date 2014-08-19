@@ -1,21 +1,45 @@
 <h1 class="page-header"><i class="fa fa-sitemap fa-fw"></i> Spider <small>Configuration &raquo; {{formName}}</small></h1>
 
-<form class="form-horizontal" role="form" ng-submit="submit()" name="spiderRuleForm">
-	<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderRuleForm.host.$valid }">
-		<label class="control-label col-md-3" for="Host">Base Domain Name</label>
-		<div class="col-md-9">
-			<input class="form-control" type="text" id="Host" name="host" placeholder="www.example.com" required ng-model="host">
+<div class="col-lg-6">
+	<h2>{{formName}}</h2>
+	<form class="form-horizontal" role="form" ng-submit="submit()" name="spiderRuleForm">
+		<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderRuleForm.host.$valid }">
+			<label class="control-label col-md-3" for="Host">Base Domain Name</label>
+			<div class="col-md-9">
+				<input class="form-control" type="text" id="Host" name="host" placeholder="www.example.com" required ng-model="host">
+			</div>
+		</div>
+		<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderRuleForm.json.$valid }">
+			<label class="control-label col-md-3" for="JSON">JSON Configuration</label>
+			<div class="col-md-9">
+				<textarea class="form-control" id="JSON" name="json" style="font-family:monospace" rows="15" ng-model="json" ng-change="validate(spiderRuleForm)"></textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-md-5 col-md-offset-3">
+				<button type="submit" class="btn btn-primary" ng-disabled="!spiderRuleForm.$valid">{{formName}}</button>
+			</div>
+			<div class="col-md-4">
+				<div class="text-right">
+					<button type="button" class="btn btn-success" ng-disabled="!spiderRuleForm.$valid" ng-click="test(spiderRuleForm)">Test Config <span class="fa fa-angle-right"></span></button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<div class="col-lg-6">
+	<h2>Test Results</h2>
+	<div ng-if="testData.Success">
+		<div ng-repeat="(type, urls) in testData.Response">
+			<h3>{{type}} ({{urls.length}})</h3>
+			<ul>
+				<li ng-repeat="u in urls">{{goUrlToString(u)}}</li>
+			</ul>
 		</div>
 	</div>
-	<div class="form-group" ng-class="{ 'has-feedback has-error': !spiderRuleForm.json.$valid }">
-		<label class="control-label col-md-3" for="JSON">JSON Configuration</label>
-		<div class="col-md-9">
-			<textarea class="form-control" id="JSON" name="json" style="font-family:monospace" rows="15" ng-model="json" ng-change="validate(spiderRuleForm)"></textarea>
-		</div>
+	<div ng-if="testData &amp;&amp; !testData.Success">
+		<div class="text-danger">There was an error while processing:</div>
+		<pre>{{testData.Error}}</pre>
 	</div>
-	<div class="form-group">
-		<div class="col-md-9 col-md-offset-3">
-			<button type="submit" class="btn btn-primary" ng-disabled="!spiderRuleForm.$valid">{{formName}}</button>
-		</div>
-	</div>
-</form>
+</div>
