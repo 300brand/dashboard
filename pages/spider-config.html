@@ -21,21 +21,22 @@
 			<td>
 				<a href="#/spider/config/edit/{{rule.Id}}"><span class="fa fa-edit fa-fw"></span> Edit</a>
 			</td>
-			<td>
+			<td ng-controller="SpiderRuleDeleteController">
 				<a ng-click="confirmDelete(rule.Id)"><span class="fa fa-trash-o fa-fw"></span> Delete</a>
-				<script type="text/ng-template" id="ModalDelete{{rule.Id}}.html">
-					<div class="modal-header">
-						<h4 class="modal-title">Confirm Deletion</h4>
-					</div>
-					<div class="modal-body">
-						Are you sure you want to delete the rule for {{rule.Host}}
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary">Delete</button>
-						<button type="button" class="btn btn-warning">Cancel</button>
-					</div>
-				</script>
 			</td>
 		</tr>
 	</tbody>
 </table>
+
+<script type="text/ng-template" id="ModalDelete.html">
+	<div class="modal-header">
+		<h4 class="modal-title">Confirm Deletion</h4>
+	</div>
+	<div class="modal-body">
+		Are you sure you want to delete the rule for {{id}}
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-primary" ng-click="ok()">Delete</button>
+		<button type="button" class="btn btn-warning" ng-click="cancel()">Cancel</button>
+	</div>
+</script>

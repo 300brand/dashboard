@@ -1,5 +1,5 @@
 <?php
-$address = "192.168.20.17:8080";
+$address = "192.168.20.15:8080";
 
 if (substr($_SERVER['SERVER_NAME'], -8) == 'squeaker') {
 	$address = "192.168.1.4:8080";

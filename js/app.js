@@ -113,7 +113,7 @@ dashboardApp.service('SpiderConfiguratorService', ['$resource', function($resour
 			isArray: false,
 			url:     'configurator/spider/rule/all',
 		},
-		del: {
+		'delete': {
 			isArray: false,
 			url:     'configurator/spider/rule/delete/:id',
 		},
@@ -277,36 +277,10 @@ dashboardApp.controller('SpiderConfigController', [
 	'$modal',
 	'SpiderConfiguratorService',
 	function($scope, $modal, SpiderConfiguratorService) {
-		// http://stackoverflow.com/a/19931221
-		$scope.form = {}
 		$scope.rules = []
 		SpiderConfiguratorService.all(function(data) {
 			$scope.rules = data.Response
 		})
-		$scope.openForm = function(id) {
-			var modalInstance = $modal.open({
-				templateUrl: 'ModalFormTemplate.html',
-				controller:  (id>0) ? 'SpiderRuleEditFormController' : 'SpiderRuleAddFormController',
-				size:        '',
-				resolve:     {
-					formName: function() {
-						return (id > 0) ? "Add New Rule" : "Edit Rule"
-					},
-					id: function() {
-						return id
-					}
-				}
-			})
-
-			modalInstance.result.then(
-				function() {
-					console.log("Closed with arguments", arguments)
-				},
-				function() {
-					console.log("Dismissed")
-				}
-			)
-		}
 	}
 ])
 
@@ -381,3 +355,53 @@ dashboardApp.controller('SpiderRuleEditFormController', [
 		}
 	}
 ])
+
+dashboardApp.controller('SpiderRuleDeleteController', [
+	'$scope',
+	'$route',
+	'$modal',
+	'SpiderConfiguratorService',
+	function($scope, $route, $modal, SpiderConfiguratorService) {
+		$scope.confirmDelete = function(id) {
+			var modalInstance = $modal.open({
+				templateUrl:  'ModalDelete.html',
+				controller: SpiderRuleModalController,
+				size:       '',
+				resolve:    {
+					id: function() { return id }
+				}
+			})
+			modalInstance.result.then(
+				// Closed
+				function(id) {
+					SpiderConfiguratorService.delete({id: id}, function(data) {
+						if (data.Success) {
+							$route.reload()
+						} else {
+							console.log("Deletion failed!", data)
+						}
+					})
+				},
+				// Dismissed
+				function(reason) {
+					console.log("Dismissed: %s", reason)
+					// NOOP
+				}
+			)
+		}
+	}
+])
+
+var SpiderRuleModalController = [
+	'$scope',
+	'$modalInstance',
+	'id',
+	function($scope, $modalInstance, id) {
+		$scope.ok = function() {
+			$modalInstance.close(id)
+		}
+		$scope.cancel = function() {
+			$modalInstance.dismiss('cancel')
+		}
+	}
+]
