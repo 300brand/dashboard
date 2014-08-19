@@ -10,6 +10,9 @@
 	<!-- Custom CSS from http://startbootstrap.com/template-overviews/sb-admin-2/ -->
 	<link rel="stylesheet" href="css/sb-admin-2.css">
 	<style type="text/css">
+	a[ng-click] {
+		cursor:pointer;
+	}
 	.supervisor-log {
 		padding-top:0.5em;
 	}
@@ -69,7 +72,7 @@
 						<a ng-class="{ active: isActive('/machines') }" href="#/machines"><i class="fa fa-linux fa-fw"></i> Machines</a>
 					</li>
 					<li>
-						<a ng-class="{ active: isActive('/supervisors') }" href="#/supervisors"><i class="fa fa-gears fa-fw"></i> Processes</a>
+						<a ng-class="{ active: isActive('/processes') }" href="#/processes"><i class="fa fa-gears fa-fw"></i> Processes</a>
 					</li>
 					<li class="active">
 						<a ng-class="{ active: isActive('/spider') }" href="#/processes"><i class="fa fa-sitemap fa-fw"></i> Spider<span class="fa arrow"></span></a>
